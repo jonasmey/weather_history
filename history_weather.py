@@ -12,18 +12,25 @@ def Average(l):     # Calculate average
 
 
 ##################################################################################
-sg.theme('SandyBeach')           #    create theme for the simple GUI   
+sg.theme('LightBlue3')           #    create theme for the simple GUI   
 
 while True: 
 
                                                                                                   
-    layout = [                                       #    create simple GUI   
-        [sg.Text('Enter your location:')],
-        [sg.Text('Location:', size=(15, 1)), sg.InputText()],
-        [sg.Text('Enter your start date:', size=(15, 1 )), sg.InputText()],
-        [sg.Text('Enter your end date:', size=(15, 1 )), sg.InputText()],
-        [sg.Submit(), sg.Cancel()]
+    layout = [
+    [sg.Text('Climate History', font=('Helvetica', 20), justification='center', size=(30, 1))],
+    [sg.Text('Enter your location:', font=('Helvetica', 14))],
+    [sg.InputText(size=(30, 1))],
+    [sg.Text('Enter your start date:', font=('Helvetica', 14))],
+    [sg.InputText(size=(30, 1))],
+    [sg.Text('Enter your end date:', font=('Helvetica', 14))],
+    [sg.InputText(size=(30, 1))],
+    [sg.Submit(button_color=('white', 'green')), sg.Cancel(button_color=('white', 'red'))]
     ]
+
+
+
+
     window = sg.Window('Climate History', layout)
     event, values = window.read()
     window.close()
@@ -61,23 +68,9 @@ while True:
         data = Daily(location, start, end)
         data = data.fetch()
     
-        avg_lst = []
-        for v in data['tavg']:
-            avg_lst.append(v)
-        average = Average(avg_lst)  # Calculate the average of the average temp. over on year
-        average_lst.append(average)
-
-        max_lst = []                                                               
-        for v2 in data['tmax']:
-            max_lst.append(v2)
-        max_temp = Average(max_lst)  # Calculate the average max. temp over one year 
-        average_lst2.append(max_temp)
-
-        min_lst = []                                                               
-        for v3 in data['tmin']:
-            min_lst.append(v3)
-        min_temp = Average(min_lst)  # Calculate the average min. temp over one year 
-        average_lst3.append(min_temp)
+        average_lst.append(Average(data['tavg']))
+        average_lst2.append(Average(data['tmax']))
+        average_lst3.append(Average(data['tmin']))
 
 
     avgpoint1 = [average_lst[0], average_lst[-1]]
@@ -88,10 +81,11 @@ while True:
 
 
     fig, ax = plt.subplots()                    ####### plot stuff ######
-    ax.plot(year_lst, average_lst2)
+    ax.plot(year_lst, average_lst2,  label='Average Max Temp')
     ax.plot(yearsafe, maxpoint)
-    ax.plot(year_lst, average_lst)
+    ax.plot(year_lst, average_lst, label='Average Temp')
     ax.plot(yearsafe, avgpoint1)
-    ax.plot(year_lst, average_lst3)
+    ax.plot(year_lst, average_lst3, label='Average Min Temp')
     ax.plot(yearsafe, minpoint)
+    ax.legend()
     plt.show(block=True)
