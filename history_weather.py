@@ -10,6 +10,12 @@ def Average(l):     # Calculate average
     avg = mean(l) 
     return avg
 
+def geolocate(location_str):
+    geolocator = Nominatim(user_agent="history_weather")
+    location = geolocator.geocode(location_str)
+    return Point(location.latitude, location.longitude)
+
+    
 
 ##################################################################################
 sg.theme('LightBlue3')           #    create theme for the simple GUI   
@@ -28,37 +34,26 @@ while True:
     [sg.Submit(button_color=('white', 'green')), sg.Cancel(button_color=('white', 'red'))]
     ]
 
-
-
-
     window = sg.Window('Climate History', layout)
     event, values = window.read()
     window.close()
+    if event == 'Cancel' or event == None:          ######### if user clicks cancel or closes window stop program
+        break
 ###################################################################################
 
 
-    if event == 'Cancel' or event == None:          ######### if user clicks cancel or closes window stop program
-        break
+#    print(values)                               ######### if you want to see the values of the inputs
 
-#    print(values[0])                               ######### if you want to see the values of the inputs
-
-
-
-    geolocater = Nominatim(user_agent="history_weather")
-    location = geolocater.geocode(values[0])
-#    print((location.latitude, location.longitude)) ######### if you want to see the coordinates of the location 
-
-
-
-    location = Point(location.latitude, location.longitude)
-    average_lst = []
-    average_lst2 = []
-    average_lst3 = []
-
-# Set time period
+    location = geolocate(values[0])
+  
+    # Set time period
     first_year = int(values[1])
     last_year = int(values[2])
 
+
+    average_lst = []
+    average_lst2 = []
+    average_lst3 = []
 
     year_lst = []
     for i in range(first_year, last_year):
@@ -81,11 +76,11 @@ while True:
 
 
     fig, ax = plt.subplots()                    ####### plot stuff ######
-    ax.plot(year_lst, average_lst2,  label='Average Max Temp')
-    ax.plot(yearsafe, maxpoint)
     ax.plot(year_lst, average_lst, label='Average Temp')
     ax.plot(yearsafe, avgpoint1)
-    ax.plot(year_lst, average_lst3, label='Average Min Temp')
+    ax.plot(year_lst, average_lst2,  label='Max Temp')
+    ax.plot(yearsafe, maxpoint)
+    ax.plot(year_lst, average_lst3, label='Min Temp')
     ax.plot(yearsafe, minpoint)
     ax.legend()
     plt.show(block=True)
